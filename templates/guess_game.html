@@ -1,0 +1,8 @@
+<h1>Guess Game</h1>
+<p>Guess a number between 1 and {{ difficulty }}</p>
+<form method="POST" action="/play">
+    <input type="number" name="user_guess" min="1" max="{{ difficulty }}" required>
+    <input type="hidden" name="game_choice" value="2">
+    <input type="hidden" name="difficulty" value="{{ difficulty }}">
+    <button type="submit">Guess</button>
+</form>

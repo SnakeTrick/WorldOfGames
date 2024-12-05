@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Choose Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World of Games</title>
 </head>
 <body>
-    <h1>Choose Your Game</h1>
-    <form method="POST">
-        <label for="game_choice">Game:</label>
-        <select name="game_choice" id="game_choice">
+    <h1>Welcome to World of Games</h1>
+    <form method="POST" action="/play">
+        <label for="game_choice">Choose a game:</label><br>
+        <select name="game_choice" id="game_choice" required>
             <option value="1">Memory Game</option>
             <option value="2">Guess Game</option>
             <option value="3">Currency Roulette</option>
-        </select>
-        <br>
-        <label for="difficulty">Difficulty (1-5):</label>
-        <input type="number" name="difficulty" id="difficulty" min="1" max="5" required>
-        <br>
+        </select><br><br>
+
+        <label for="difficulty">Choose difficulty (1-5):</label><br>
+        <input type="number" name="difficulty" id="difficulty" min="1" max="5" required><br><br>
+
         <button type="submit">Play</button>
     </form>
 </body>

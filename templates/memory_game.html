@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        #sequence {
+            font-size: 2em;
+            display: none;
+            color: blue;
+        }
+        #input-section {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Memory Game</h1>
+    <p>Memorize the sequence of numbers!</p>
+    <div id="sequence">
+        {% for number in sequence %}
+            <span>{{ number }} </span>
+        {% endfor %}
+    </div>
+
+    <div id="input-section">
+        <h2>Enter the numbers you remember:</h2>
+        <form method="POST" action="/play">
+            <input type="text" name="user_input" placeholder="Enter numbers here..." required>
+            <input type="hidden" name="game_choice" value="1">
+            <input type="hidden" name="difficulty" value="{{ difficulty }}">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Show the sequence for a specific duration (e.g., 3 seconds)
+        setTimeout(function() {
+            document.getElementById("sequence").style.display = "none";
+            document.getElementById("input-section").style.display = "block";
+        }, 3000); // Change 3000 to whatever duration you want (in milliseconds)
+
+        // Show the sequence immediately when the page loads
+        document.getElementById("sequence").style.display = "block";
+    </script>
+</body>
+</html>

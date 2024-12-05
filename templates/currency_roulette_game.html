@@ -1,0 +1,8 @@
+<h1>Currency Roulette</h1>
+<p>Guess the value of USD to ILS exchange rate for the amount of ${{ generated_amount }}</p>
+<form method="POST" action="/play">
+    <input type="number" name="user_guess" step="any" required>
+    <input type="hidden" name="game_choice" value="3">
+    <input type="hidden" name="difficulty" value="{{ difficulty }}">
+    <button type="submit">Guess</button>
+</form>

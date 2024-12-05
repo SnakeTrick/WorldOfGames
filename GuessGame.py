@@ -1,28 +1,26 @@
 import random
 
+
+# This function generates a secret number based on the difficulty.
 def generate_number(difficulty):
     return random.randint(1, difficulty)
 
-def get_guess_from_user(difficulty):
-    while True:
-        try:
-            guess = int(input(f"Guess a number between 1 and {difficulty}: "))
-            if 1 <= guess <= difficulty:
-                return guess
-            else:
-                print(f"Please enter a number between 1 and {difficulty}.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
 
-def compare_results(secret_number, user_guess):
-    return secret_number == user_guess
+# This function compares the user's guess to the secret number.
+def compare_results(user_guess, secret_number):
+    return user_guess == secret_number
 
+
+# Main game function.
 def play(difficulty):
+    # Generate a secret number
     secret_number = generate_number(difficulty)
-    user_guess = get_guess_from_user(difficulty)
-    if compare_results(secret_number, user_guess):
-        print("You won!")
-        return True
+
+    # Prompt the user for their guess (in this case, assume you get it from Flask)
+    user_guess = int(input(f"Guess a number between 1 and {difficulty}: "))
+
+    # Compare the guess and check if the user won
+    if compare_results(user_guess, secret_number):
+        return True  # User won
     else:
-        print(f"You lost! The correct number was {secret_number}.")
-        return False
+        return False  # User lost
