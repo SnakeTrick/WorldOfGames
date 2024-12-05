@@ -1,0 +1,407 @@
+Index: app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from flask import Flask, render_template, request, redirect, url_for\r\nfrom Live import welcome, load_game\r\nfrom GuessGame import play as play_guess\r\nfrom MemoryGame import play as play_memory\r\nfrom CurrencyRouletteGame import play as play_currency_roulette\r\n\r\napp = Flask(__name__)\r\n\r\n@app.route(\"/\")\r\ndef home():\r\n    return render_template(\"index.html\", message=\"Welcome to World of Games!\")\r\n\r\n@app.route(\"/play\", methods=[\"GET\", \"POST\"])\r\ndef play():\r\n    if request.method == \"POST\":\r\n        game_choice = int(request.form[\"game_choice\"])\r\n        difficulty = int(request.form[\"difficulty\"])\r\n        if game_choice == 1:\r\n            result = play_memory(difficulty)\r\n        elif game_choice == 2:\r\n            result = play_guess(difficulty)\r\n        elif game_choice == 3:\r\n            result = play_currency_roulette(difficulty)\r\n        else:\r\n            result = False\r\n        return render_template(\"result.html\", success=result)\r\n    return render_template(\"play.html\")\r\n\r\nif __name__ == \"__main__\":\r\n    app.run(debug=True)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app.py b/app.py
+--- a/app.py	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/app.py	(date 1733397514832)
+@@ -1,30 +1,47 @@
+-from flask import Flask, render_template, request, redirect, url_for
+-from Live import welcome, load_game
++from flask import Flask, render_template, request
+ from GuessGame import play as play_guess
+ from MemoryGame import play as play_memory
+ from CurrencyRouletteGame import play as play_currency_roulette
+ 
+ app = Flask(__name__)
+ 
+-@app.route("/")
++@app.route('/')
+ def home():
+-    return render_template("index.html", message="Welcome to World of Games!")
++    # Show the game selection page
++    return render_template('play.html')
+ 
+-@app.route("/play", methods=["GET", "POST"])
++@app.route('/play', methods=['POST'])
+ def play():
+-    if request.method == "POST":
+-        game_choice = int(request.form["game_choice"])
+-        difficulty = int(request.form["difficulty"])
+-        if game_choice == 1:
+-            result = play_memory(difficulty)
+-        elif game_choice == 2:
+-            result = play_guess(difficulty)
+-        elif game_choice == 3:
+-            result = play_currency_roulette(difficulty)
++    game_choice = request.form.get("game_choice")
++    difficulty = request.form.get("difficulty")
++
++    # Convert to integers and validate inputs
++    try:
++        game_choice = int(game_choice)
++        difficulty = int(difficulty)
++    except ValueError:
++        return "Invalid input. Please enter numeric values.", 400
++
++    if game_choice not in range(1, 4) or difficulty not in range(1, 6):
++        return "Invalid input. Please select valid options.", 400
++
++    # Game logic based on user's choice
++    if game_choice == 1:
++        # Start Memory Game (You would implement this logic in MemoryGame.py)
++        return render_template('memory_game.html', difficulty=difficulty)
++    elif game_choice == 2:
++        # Start Guess Game
++        result = play_guess(difficulty)  # Use the GuessGame play function
++        if result:
++            message = f"You won! The secret number was guessed correctly."
+         else:
+-            result = False
+-        return render_template("result.html", success=result)
+-    return render_template("play.html")
++            message = f"You lost! The secret number was {random.randint(1, difficulty)}."
++        return render_template('result.html', message=message)
++    elif game_choice == 3:
++        # Start Currency Roulette Game (You would implement this in CurrencyRouletteGame.py)
++        return render_template('currency_roulette_game.html', difficulty=difficulty)
+ 
+-if __name__ == "__main__":
++    return "Unknown game choice. Please try again.", 400
++
++if __name__ == '__main__':
+     app.run(debug=True)
+Index: MemoryGame.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import random\r\nimport time\r\n\r\ndef generate_sequence(difficulty):\r\n    return [random.randint(1, 101) for _ in range(difficulty)]\r\n\r\ndef get_list_from_user(difficulty):\r\n    print(f\"Enter {difficulty} numbers separated by space:\")\r\n    while True:\r\n        try:\r\n            user_input = list(map(int, input().split()))\r\n            if len(user_input) == difficulty:\r\n                return user_input\r\n            else:\r\n                print(f\"Please enter exactly {difficulty} numbers.\")\r\n        except ValueError:\r\n            print(\"Invalid input. Please enter numbers only.\")\r\n\r\ndef is_list_equal(sequence, user_list):\r\n    return sequence == user_list\r\n\r\ndef play(difficulty):\r\n    sequence = generate_sequence(difficulty)\r\n    print(\"Memorize this sequence:\")\r\n    print(sequence)\r\n    time.sleep(0.7)\r\n    print(\"\\n\" * 100)\r\n    user_list = get_list_from_user(difficulty)\r\n    if is_list_equal(sequence, user_list):\r\n        print(\"You won!\")\r\n        return True\r\n    else:\r\n        print(f\"You lost! The correct sequence was {sequence}.\")\r\n        return False\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MemoryGame.py b/MemoryGame.py
+--- a/MemoryGame.py	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/MemoryGame.py	(date 1733396739132)
+@@ -1,34 +1,9 @@
+ import random
+-import time
+-
+-def generate_sequence(difficulty):
+-    return [random.randint(1, 101) for _ in range(difficulty)]
+ 
+-def get_list_from_user(difficulty):
+-    print(f"Enter {difficulty} numbers separated by space:")
+-    while True:
+-        try:
+-            user_input = list(map(int, input().split()))
+-            if len(user_input) == difficulty:
+-                return user_input
+-            else:
+-                print(f"Please enter exactly {difficulty} numbers.")
+-        except ValueError:
+-            print("Invalid input. Please enter numbers only.")
+-
+-def is_list_equal(sequence, user_list):
+-    return sequence == user_list
+ 
+ def play(difficulty):
+-    sequence = generate_sequence(difficulty)
+-    print("Memorize this sequence:")
+-    print(sequence)
+-    time.sleep(0.7)
+-    print("\n" * 100)
+-    user_list = get_list_from_user(difficulty)
+-    if is_list_equal(sequence, user_list):
+-        print("You won!")
+-        return True
+-    else:
+-        print(f"You lost! The correct sequence was {sequence}.")
+-        return False
++    # Generate the sequence of random numbers
++    sequence = [random.randint(1, 101) for _ in range(difficulty)]
++
++    # Return the sequence to be displayed by the frontend
++    return sequence
+\ No newline at end of file
+Index: templates/play.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html>\r\n<head>\r\n    <title>Choose Game</title>\r\n</head>\r\n<body>\r\n    <h1>Choose Your Game</h1>\r\n    <form method=\"POST\">\r\n        <label for=\"game_choice\">Game:</label>\r\n        <select name=\"game_choice\" id=\"game_choice\">\r\n            <option value=\"1\">Memory Game</option>\r\n            <option value=\"2\">Guess Game</option>\r\n            <option value=\"3\">Currency Roulette</option>\r\n        </select>\r\n        <br>\r\n        <label for=\"difficulty\">Difficulty (1-5):</label>\r\n        <input type=\"number\" name=\"difficulty\" id=\"difficulty\" min=\"1\" max=\"5\" required>\r\n        <br>\r\n        <button type=\"submit\">Play</button>\r\n    </form>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/play.html b/templates/play.html
+--- a/templates/play.html	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/templates/play.html	(date 1733397012937)
+@@ -1,21 +1,23 @@
+ <!DOCTYPE html>
+-<html>
++<html lang="en">
+ <head>
+-    <title>Choose Game</title>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>World of Games</title>
+ </head>
+ <body>
+-    <h1>Choose Your Game</h1>
+-    <form method="POST">
+-        <label for="game_choice">Game:</label>
+-        <select name="game_choice" id="game_choice">
++    <h1>Welcome to World of Games</h1>
++    <form method="POST" action="/play">
++        <label for="game_choice">Choose a game:</label><br>
++        <select name="game_choice" id="game_choice" required>
+             <option value="1">Memory Game</option>
+             <option value="2">Guess Game</option>
+             <option value="3">Currency Roulette</option>
+-        </select>
+-        <br>
+-        <label for="difficulty">Difficulty (1-5):</label>
+-        <input type="number" name="difficulty" id="difficulty" min="1" max="5" required>
+-        <br>
++        </select><br><br>
++
++        <label for="difficulty">Choose difficulty (1-5):</label><br>
++        <input type="number" name="difficulty" id="difficulty" min="1" max="5" required><br><br>
++
+         <button type="submit">Play</button>
+     </form>
+ </body>
+Index: templates/result.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html>\r\n<head>\r\n    <title>Game Result</title>\r\n</head>\r\n<body>\r\n    <h1>{{ \"You Won!\" if success else \"You Lost!\" }}</h1>\r\n    <a href=\"{{ url_for('home') }}\">Go Back Home</a>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/result.html b/templates/result.html
+--- a/templates/result.html	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/templates/result.html	(date 1733397544732)
+@@ -1,10 +1,13 @@
+ <!DOCTYPE html>
+-<html>
++<html lang="en">
+ <head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Game Result</title>
+ </head>
+ <body>
+-    <h1>{{ "You Won!" if success else "You Lost!" }}</h1>
+-    <a href="{{ url_for('home') }}">Go Back Home</a>
++    <h1>Game Result</h1>
++    <p>{{ message }}</p>
++    <a href="/">Back to game selection</a>
+ </body>
+ </html>
+Index: GuessGame.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import random\r\n\r\ndef generate_number(difficulty):\r\n    return random.randint(1, difficulty)\r\n\r\ndef get_guess_from_user(difficulty):\r\n    while True:\r\n        try:\r\n            guess = int(input(f\"Guess a number between 1 and {difficulty}: \"))\r\n            if 1 <= guess <= difficulty:\r\n                return guess\r\n            else:\r\n                print(f\"Please enter a number between 1 and {difficulty}.\")\r\n        except ValueError:\r\n            print(\"Invalid input. Please enter a number.\")\r\n\r\ndef compare_results(secret_number, user_guess):\r\n    return secret_number == user_guess\r\n\r\ndef play(difficulty):\r\n    secret_number = generate_number(difficulty)\r\n    user_guess = get_guess_from_user(difficulty)\r\n    if compare_results(secret_number, user_guess):\r\n        print(\"You won!\")\r\n        return True\r\n    else:\r\n        print(f\"You lost! The correct number was {secret_number}.\")\r\n        return False\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GuessGame.py b/GuessGame.py
+--- a/GuessGame.py	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/GuessGame.py	(date 1733397506403)
+@@ -1,28 +1,26 @@
+ import random
+ 
++
++# This function generates a secret number based on the difficulty.
+ def generate_number(difficulty):
+     return random.randint(1, difficulty)
+ 
+-def get_guess_from_user(difficulty):
+-    while True:
+-        try:
+-            guess = int(input(f"Guess a number between 1 and {difficulty}: "))
+-            if 1 <= guess <= difficulty:
+-                return guess
+-            else:
+-                print(f"Please enter a number between 1 and {difficulty}.")
+-        except ValueError:
+-            print("Invalid input. Please enter a number.")
+ 
+-def compare_results(secret_number, user_guess):
+-    return secret_number == user_guess
++# This function compares the user's guess to the secret number.
++def compare_results(user_guess, secret_number):
++    return user_guess == secret_number
+ 
++
++# Main game function.
+ def play(difficulty):
++    # Generate a secret number
+     secret_number = generate_number(difficulty)
+-    user_guess = get_guess_from_user(difficulty)
+-    if compare_results(secret_number, user_guess):
+-        print("You won!")
+-        return True
++
++    # Prompt the user for their guess (in this case, assume you get it from Flask)
++    user_guess = int(input(f"Guess a number between 1 and {difficulty}: "))
++
++    # Compare the guess and check if the user won
++    if compare_results(user_guess, secret_number):
++        return True  # User won
+     else:
+-        print(f"You lost! The correct number was {secret_number}.")
+-        return False
++        return False  # User lost
+Index: CurrencyRouletteGame.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import random\r\nimport requests\r\n\r\ndef get_exchange_rate():\r\n    try:\r\n        response = requests.get(\"https://api.exchangerate-api.com/v4/latest/USD\")\r\n        rates = response.json()\r\n        return rates[\"rates\"][\"ILS\"]\r\n    except Exception:\r\n        print(\"Error fetching exchange rate. Using default rate of 3.5.\")\r\n        return 3.5\r\n\r\ndef get_money_interval(difficulty, amount, rate):\r\n    total_value = amount * rate\r\n    margin = 5 - difficulty\r\n    return total_value - margin, total_value + margin\r\n\r\ndef get_guess_from_user(amount):\r\n    while True:\r\n        try:\r\n            guess = float(input(f\"Guess the value of {amount} USD in ILS: \"))\r\n            return guess\r\n        except ValueError:\r\n            print(\"Invalid input. Please enter a number.\")\r\n\r\ndef play(difficulty):\r\n    rate = get_exchange_rate()\r\n    amount = random.randint(1, 100)\r\n    lower_bound, upper_bound = get_money_interval(difficulty, amount, rate)\r\n    guess = get_guess_from_user(amount)\r\n    if lower_bound <= guess <= upper_bound:\r\n        print(\"You won!\")\r\n        return True\r\n    else:\r\n        print(f\"You lost! The correct range was {lower_bound:.2f} - {upper_bound:.2f}.\")\r\n        return False\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CurrencyRouletteGame.py b/CurrencyRouletteGame.py
+--- a/CurrencyRouletteGame.py	(revision 5fb3d7a4037d34e3d4312986cf78efcfed54953a)
++++ b/CurrencyRouletteGame.py	(date 1733396923374)
+@@ -1,36 +1,14 @@
+ import random
+ import requests
+ 
+-def get_exchange_rate():
+-    try:
+-        response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+-        rates = response.json()
+-        return rates["rates"]["ILS"]
+-    except Exception:
+-        print("Error fetching exchange rate. Using default rate of 3.5.")
+-        return 3.5
+-
+-def get_money_interval(difficulty, amount, rate):
+-    total_value = amount * rate
+-    margin = 5 - difficulty
+-    return total_value - margin, total_value + margin
+-
+-def get_guess_from_user(amount):
+-    while True:
+-        try:
+-            guess = float(input(f"Guess the value of {amount} USD in ILS: "))
+-            return guess
+-        except ValueError:
+-            print("Invalid input. Please enter a number.")
++def get_currency_rate():
++    # You can use any free API to get the exchange rate, for example:
++    response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
++    data = response.json()
++    return data['rates']['ILS']
+ 
+ def play(difficulty):
+-    rate = get_exchange_rate()
+-    amount = random.randint(1, 100)
+-    lower_bound, upper_bound = get_money_interval(difficulty, amount, rate)
+-    guess = get_guess_from_user(amount)
+-    if lower_bound <= guess <= upper_bound:
+-        print("You won!")
+-        return True
+-    else:
+-        print(f"You lost! The correct range was {lower_bound:.2f} - {upper_bound:.2f}.")
+-        return False
++    currency_rate = get_currency_rate()
++    generated_amount = random.randint(1, 100)
++    interval = (currency_rate * generated_amount) * (1 - (5 - difficulty)/100), (currency_rate * generated_amount) * (1 + (5 - difficulty)/100)
++    return generated_amount, interval
+\ No newline at end of file
+Index: templates/memory_game.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/memory_game.html b/templates/memory_game.html
+new file mode 100644
+--- /dev/null	(date 1733396865526)
++++ b/templates/memory_game.html	(date 1733396865526)
+@@ -0,0 +1,49 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Memory Game</title>
++    <style>
++        #sequence {
++            font-size: 2em;
++            display: none;
++            color: blue;
++        }
++        #input-section {
++            display: none;
++            margin-top: 20px;
++        }
++    </style>
++</head>
++<body>
++    <h1>Memory Game</h1>
++    <p>Memorize the sequence of numbers!</p>
++    <div id="sequence">
++        {% for number in sequence %}
++            <span>{{ number }} </span>
++        {% endfor %}
++    </div>
++
++    <div id="input-section">
++        <h2>Enter the numbers you remember:</h2>
++        <form method="POST" action="/play">
++            <input type="text" name="user_input" placeholder="Enter numbers here..." required>
++            <input type="hidden" name="game_choice" value="1">
++            <input type="hidden" name="difficulty" value="{{ difficulty }}">
++            <button type="submit">Submit</button>
++        </form>
++    </div>
++
++    <script>
++        // Show the sequence for a specific duration (e.g., 3 seconds)
++        setTimeout(function() {
++            document.getElementById("sequence").style.display = "none";
++            document.getElementById("input-section").style.display = "block";
++        }, 3000); // Change 3000 to whatever duration you want (in milliseconds)
++
++        // Show the sequence immediately when the page loads
++        document.getElementById("sequence").style.display = "block";
++    </script>
++</body>
++</html>
+Index: templates/guess_game.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/guess_game.html b/templates/guess_game.html
+new file mode 100644
+--- /dev/null	(date 1733396899949)
++++ b/templates/guess_game.html	(date 1733396899949)
+@@ -0,0 +1,8 @@
++<h1>Guess Game</h1>
++<p>Guess a number between 1 and {{ difficulty }}</p>
++<form method="POST" action="/play">
++    <input type="number" name="user_guess" min="1" max="{{ difficulty }}" required>
++    <input type="hidden" name="game_choice" value="2">
++    <input type="hidden" name="difficulty" value="{{ difficulty }}">
++    <button type="submit">Guess</button>
++</form>
+\ No newline at end of file
+Index: templates/currency_roulette_game.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/currency_roulette_game.html b/templates/currency_roulette_game.html
+new file mode 100644
+--- /dev/null	(date 1733396940614)
++++ b/templates/currency_roulette_game.html	(date 1733396940614)
+@@ -0,0 +1,8 @@
++<h1>Currency Roulette</h1>
++<p>Guess the value of USD to ILS exchange rate for the amount of ${{ generated_amount }}</p>
++<form method="POST" action="/play">
++    <input type="number" name="user_guess" step="any" required>
++    <input type="hidden" name="game_choice" value="3">
++    <input type="hidden" name="difficulty" value="{{ difficulty }}">
++    <button type="submit">Guess</button>
++</form>
