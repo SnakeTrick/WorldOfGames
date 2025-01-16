@@ -1,8 +1,6 @@
 from flask import Flask
-from Utils import SCORES_FILE_NAME, BAD_RETURN_CODE
-
-app = Flask(__name__)
-
+# src/web/MainScores.py
+from src.utils.Utils import SCORES_FILE_NAME, BAD_RETURN_CODE
 @app.route('/')
 def score_server():
     try:

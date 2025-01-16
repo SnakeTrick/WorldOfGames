@@ -1,5 +1,3 @@
-# Live.py
-
 def welcome(name):
     """Welcome the player to World of Games"""
     return f"""Hello {name} and welcome to the World of Games (WoG).
@@ -28,19 +26,19 @@ def load_game():
 
             # Import games only when needed
             if game_choice == 1:
-                from MemoryGame import MemoryGame
+                from src.games.MemoryGame import MemoryGame
                 game = MemoryGame(difficulty)
             elif game_choice == 2:
-                from GuessGame import GuessGame
+                from src.games.GuessGame import GuessGame
                 game = GuessGame(difficulty)
             else:
-                from CurrencyRouletteGame import CurrencyRouletteGame
+                from src.games.CurrencyRouletteGame import CurrencyRouletteGame
                 game = CurrencyRouletteGame(difficulty)
 
             # Play the game and handle scoring
             won = game.play()
             if won:
-                from Score import add_score
+                from src.utils.Score import add_score
                 add_score(difficulty)
             return
 

@@ -1,8 +1,7 @@
-# MemoryGame.py
 import random
 import time
 import os
-from Utils import screen_cleaner
+from src.utils.Utils import screen_cleaner
 
 
 class MemoryGame:
